@@ -1,18 +1,17 @@
 import mongoose from 'mongoose';
-import User from '../models/mongo/user.model.js';
+import console from '../utils/logger.js'
 
 const URL: string = process.env.MONGO_URL ? process.env.MONGO_URL : "mongodb://root:root@localhost:27017/users?authSource=admin"
 
-async function connectToDatabase() {
+async function connectToMongo() {
     try {
-        await mongoose.connect('mongodb://root:root@localhost:27017/users?authSource=admin', {
+        await mongoose.connect(URL, {
             serverSelectionTimeoutMS: 5000 // Таймаут подключения
         });
-        console.log('Успешное подключение к MongoDB');
-
-        let users = await User.find({});
-        console.log('Найдены пользователи:', users);
+        console.info('Успешное подключение к MongoDB');
     } catch (error) {
-        console.error('Ошибка подключения к MongoDB:', error);
+        console.error(error);
     }
 }
+
+export {connectToMongo}

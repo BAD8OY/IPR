@@ -7,24 +7,18 @@ import {Sequelize} from 'sequelize-typescript';
 
 const URL: string = process.env.PG_URL ? process.env.PG_URL : "postgresql://postgres:postgres@localhost:5432/orders";
 const sequelize = new Sequelize(URL);
+sequelize.options.logging = false;
+// sequelize.options.omitNull = true;
 
 
-try {
-    sequelize.addModels([Order]);
-    await sequelize.sync();
-    console.log('Connection has been established successfully.');
-    // const orders = await Order.findAll();
-
-    await getOrders();
-} catch (error) {
-    console.error(error);
+async function connectToPostgres() {
+    try {
+        sequelize.addModels([Order]);
+        await sequelize.sync();
+        console.info('Успешное подключение к PostgresDB');
+    } catch (error) {
+        console.error(error);
+    }
 }
 
-async function getOrders() {
-    const orders = await Order.findAll();
-    console.log(JSON.stringify(orders, null, 2));
-}
-
-// sequelize.close()
-
-export {sequelize}
+export {connectToPostgres}

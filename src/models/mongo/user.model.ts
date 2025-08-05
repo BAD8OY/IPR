@@ -1,14 +1,7 @@
-// id (ObjectId, генерируется MongoDB)
-// email (string, уникальный)
-// name (string)
-// profile (object, произвольная вложенная структура)
-// createdAt (datetime)
-
 import {Schema, model, Document} from 'mongoose';
 
 
 interface IUser extends Document {
-    // id: object;
     email: string;
     name: string;
     profile: object;
@@ -16,11 +9,10 @@ interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
-    // id: Schema.Types.UUID,
     email: String,
     name: String,
     profile: [{body: String, date: Date}],
-    createdAt: { type: Date, default: Date.now }
+    createdAt: {type: Date, default: () => new Date(Date.now())}
 });
 
 

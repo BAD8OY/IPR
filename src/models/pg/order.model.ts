@@ -13,12 +13,12 @@ import {Table, Column, Model, DataType} from 'sequelize-typescript';
     timestamps: false, // добавляет поля createdAt и updatedAt
 })
 export class Order extends Model<Order> {
-    @Column({
-        type: DataType.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    })
-    id!: number;
+    // @Column({
+    //     type: DataType.INTEGER,
+    //     primaryKey: true,
+    //     autoIncrement: true,
+    // })
+    // id!: number;
 
     @Column({
         type: DataType.STRING,

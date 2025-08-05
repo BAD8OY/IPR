@@ -1,24 +1,24 @@
-import User from "../models/mongo/user.model";
+import User from "../models/mongo/user.model.js";
+import {Json} from "sequelize/types/utils";
 
-let users;
-users = await User.find({});
-console.log('Найдены пользователи:', users);
 
 /**
  * POST /users — создать пользователя
  */
-async function createUser(userId, email: string, name: string, profile: object) {
-    const user = new User;
-    user.email = email;
-    user.name = name;
-    user.profile = profile;
-    user.createdAt = Date.now();
+async function createUser(email: string, name: string, profile: string) {
+    // const user = new User;
+    // user.email = email;
+    // user.name = name;
+    // user.profile = profile;
+    // user.createdAt = new Date(Date.now());
+    await User.create({email: email, name: name, profile: JSON.parse(profile), createdAt: new Date(Date.now())})
 }
 
 /**
  * GET /users/:id — получить пользователя по id
  */
 async function getUser(id) {
+    return User.findById(id).then(data => data._doc);
 
 }
 
@@ -42,3 +42,5 @@ async function deleteUser(userId) {
 async function getUsers(userId, email?: string, name?: string, profile?: object) {
 
 }
+
+export {createUser, getUser, updateUser, deleteUser, getUsers}
