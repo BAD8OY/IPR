@@ -6,19 +6,19 @@
 
 type Status = 'pending' | 'paid' | 'canceled';
 
-import {Table, Column, Model, DataType} from 'sequelize-typescript';
+import {Table, Column, Model, DataType, AutoIncrement, PrimaryKey} from 'sequelize-typescript';
 
 @Table({
     tableName: 'Order',
     timestamps: false, // добавляет поля createdAt и updatedAt
 })
 export class Order extends Model<Order> {
-    // @Column({
-    //     type: DataType.INTEGER,
-    //     primaryKey: true,
-    //     autoIncrement: true,
-    // })
-    // id!: number;
+    @PrimaryKey
+    @AutoIncrement
+    @Column({
+        type: DataType.INTEGER,
+    })
+    id!: number;
 
     @Column({
         type: DataType.STRING,
@@ -46,4 +46,4 @@ export class Order extends Model<Order> {
     createdAt!: number;
 }
 
-export default Order;
+// export default Order;

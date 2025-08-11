@@ -5,11 +5,6 @@ import {Order} from "../models/pg/order.model.js";
  * POST /orders — создать заказ
  */
 async function createOrder(userId, amount: number) {
-    // const order = new Order();
-    // order.userId = userId;
-    // order.amount = amount;
-    // order.status = 'pending';
-    // order.createdAt = Date.now();
     await Order.create({userId: userId, amount: amount, status: "pending", createdAt: Date.now()});
 }
 
@@ -25,14 +20,18 @@ async function getOrder(id: number): Promise<Order> {
  * PUT /orders/:id — обновить заказ по id
  */
 async function updateOrder(id: number) {
-    return
+    Order.update({})
 }
 
 /**
  * DELETE /orders/:id — удалить заказ
  */
-async function deleteOrder(id: number): Promise<Order> {
-    return
+async function deleteOrder(id: number) {
+    const order: Order = await getOrder(id);
+    if (order) {
+       await order.destroy();
+    }
+    return undefined;
 }
 
 /**

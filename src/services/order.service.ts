@@ -47,7 +47,14 @@ const updateOrderById = (req: Request, res: Response) => {
 
 const deleteOrderById = (req: Request, res: Response) => {
     try {
-        deleteOrder(req.body).then(data => res.status(200).send(data)).catch(err => {
+        deleteOrder(req.params.id).then(data => {
+            if (data) {
+                res.status(200).send(data);
+            }
+            else {
+                res.status(404).send('Not Found');
+            }
+        }).catch(err => {
             console.error(err.message + '\n' + err.stack)
             res.status(502).send(null)
         })
