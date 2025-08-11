@@ -1,45 +1,77 @@
-import {Order} from "../models/pg/order.model.js";
+import {Request, Response} from 'express';
+import {createOrder, deleteOrder, getOrder, getOrders, updateOrder} from '../services/order.service.js';
+import {getUser} from "../services/user.service.js";
 
-
-/**
- * POST /orders — создать заказ
- */
-async function createOrder(userId, amount: number) {
-    await Order.create({userId: userId, amount: amount, status: "pending", createdAt: Date.now()});
-}
-
-/**
- * GET /orders/:id — получить заказ по id
- */
-async function getOrder(id: number): Promise<Order> {
-    return await Order.findByPk(id)
-    // .then(data => data).catch(e => null);
-}
-
-/**
- * PUT /orders/:id — обновить заказ по id
- */
-async function updateOrder(id: number) {
-    Order.update({})
-}
-
-/**
- * DELETE /orders/:id — удалить заказ
- */
-async function deleteOrder(id: number) {
-    const order: Order = await getOrder(id);
-    if (order) {
-       await order.destroy();
+const newOrder = async (req: Request, res: Response) => {
+    try {
+        const user = await getUser(req.body.userId)
+        if (user) {
+            createOrder(req.body.userId, req.body.amount).then(data => res.status(200).send(data)).catch(err => {
+                console.error(err.message + '\n' + err.stack)
+                res.status(502).send(null)
+            })
+        }
+    } catch (e) {
+        console.error(e);
     }
-    return undefined;
 }
 
-/**
- * GET /orders — получить список заказов (с фильтрацией по userId, пагинацией)
- */
-async function getOrders(): Promise<Order[]> {
-    return await Order.findAll();
+const getOrderById = (req: Request, res: Response) => {
+    try {
+        getOrder(req.params.id).then(
+            data => {
+                if (data) {
+                    res.status(200).send(data)
+                } else {
+                    res.status(404).send('Not Found')
+                }
+            }).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
 }
 
+const updateOrderById = (req: Request, res: Response) => {
+    try {
+        updateOrder(req.body).then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
+}
 
-export {createOrder, getOrder, updateOrder, deleteOrder, getOrders}
+const deleteOrderById = (req: Request, res: Response) => {
+    try {
+        deleteOrder(req.params.id).then(data => {
+            if (data) {
+                res.status(200).send(data);
+            }
+            else {
+                res.status(404).send('Not Found');
+            }
+        }).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+const getOrdersWithFilter = (req: Request, res: Response) => {
+    try {
+        getOrders().then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+export default {getOrderById, updateOrderById, newOrder, deleteOrderById, getOrdersWithFilter};

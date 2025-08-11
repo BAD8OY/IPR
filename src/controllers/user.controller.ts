@@ -1,46 +1,59 @@
-import User from "../models/mongo/user.model.js";
-import {Json} from "sequelize/types/utils";
+import {Request, Response} from 'express';
+import {createUser, deleteUser, getUser, getUsers, updateUser} from '../services/user.service.js';
 
-
-/**
- * POST /users — создать пользователя
- */
-async function createUser(email: string, name: string, profile: string) {
-    // const user = new User;
-    // user.email = email;
-    // user.name = name;
-    // user.profile = profile;
-    // user.createdAt = new Date(Date.now());
-    await User.create({email: email, name: name, profile: JSON.parse(profile), createdAt: new Date(Date.now())})
+const newUser = (req: Request, res: Response) => {
+    try {
+        createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-/**
- * GET /users/:id — получить пользователя по id
- */
-async function getUser(id) {
-    return User.findById(id).then(data => data._doc);
-
+const getUserById = (req: Request, res: Response) => {
+    try {
+        getUser(req.params.id).then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-/**
- * PUT /users/:id — обновить пользователя
- */
-async function updateUser(userId, email?: string, name?: string, profile?: object) {
-
+const updateUserById = (req: Request, res: Response) => {
+    try {
+        updateUser(req.body).then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-/**
- * DELETE /users/:id — удалить пользователя
- */
-async function deleteUser(userId) {
-
+const deleteUserById = (req: Request, res: Response) => {
+    try {
+        deleteUser(req.body).then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-/**
- * GET /users — получить список пользователей (с пагинацией)
- */
-async function getUsers(userId, email?: string, name?: string, profile?: object) {
-
+const getUserWithFilter = (req: Request, res: Response) => {
+    try {
+        getUsers(req.body).then(data => res.status(200).send(data)).catch(err => {
+            console.error(err.message + '\n' + err.stack)
+            res.status(502).send(null)
+        })
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-export {createUser, getUser, updateUser, deleteUser, getUsers}
+export default {newUser, getUserById, updateUserById, deleteUserById, getUserWithFilter};

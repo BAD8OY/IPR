@@ -7,7 +7,7 @@
 
 import express from 'express';
 
-import service from "../services/order.service.js";
+import controller from "../controllers/order.controller.js";
 
 const orderRouter = express.Router();
 
@@ -51,10 +51,10 @@ const orderRouter = express.Router();
  *              500:
  *                  description: Internal server error
  */
-orderRouter.post('/order', service.newOrder);
-orderRouter.get('/orders/:id', service.getOrderById);
-orderRouter.put('/orders/:id', service.updateOrderById);
-orderRouter.delete('/orders/:id', service.deleteOrderById);
-orderRouter.get('/orders', service.getOrdersWithFilter);
+orderRouter.post('/order', controller.newOrder);
+orderRouter.get('/orders/:id', controller.getOrderById);
+orderRouter.put('/orders/:id', controller.updateOrderById);
+orderRouter.delete('/orders/:id', controller.deleteOrderById);
+orderRouter.get('/orders', controller.getOrdersWithFilter);
 
 export {orderRouter};

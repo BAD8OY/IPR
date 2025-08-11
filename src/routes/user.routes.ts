@@ -6,15 +6,15 @@
 
 
 import express from "express";
-import service from "../services/user.service.js";
+import controller from "../controllers/user.controller.js";
 
 const userRouter = express.Router()
 
 
-userRouter.post('/users', service.newUser);
-userRouter.get('/users/:id', service.getUserById);
-userRouter.put('/users/:id', service.updateUserById);
-userRouter.delete('/users/:id', service.deleteUserById);
-userRouter.get('/users', service.getUserWithFilter);
+userRouter.post('/users', controller.newUser);
+userRouter.get('/users/:id', controller.getUserById);
+userRouter.put('/users/:id', controller.updateUserById);
+userRouter.delete('/users/:id', controller.deleteUserById);
+userRouter.get('/users', controller.getUserWithFilter);
 
 export {userRouter};
