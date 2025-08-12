@@ -19,8 +19,16 @@ async function getOrder(id: number): Promise<Order> {
 /**
  * PUT /orders/:id — обновить заказ по id
  */
-async function updateOrder(id: number) {
-    Order.update({})
+async function updateOrder(id: number, updateData: Partial<Order>) {
+    const [affectedCount] = await Order.update(updateData, {
+        where: { id }
+    });
+
+    if (affectedCount === 0) {
+        return null;
+    }
+
+    return affectedCount;
 }
 
 /**
@@ -30,8 +38,9 @@ async function deleteOrder(id: number) {
     const order: Order = await getOrder(id);
     if (order) {
        await order.destroy();
+        return true;
     }
-    return undefined;
+    return null;
 }
 
 /**
