@@ -1,10 +1,3 @@
-// POST /users — создать пользователя
-// GET /users/:id — получить пользователя по id
-// PUT /users/:id — обновить пользователя
-// DELETE /users/:id — удалить пользователя
-// GET /users — получить список пользователей (с пагинацией)
-
-
 import express from "express";
 import controller from "../controllers/user.controller.js";
 

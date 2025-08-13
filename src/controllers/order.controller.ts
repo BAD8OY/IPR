@@ -3,6 +3,15 @@ import {createOrder, deleteOrder, getOrder, getOrders, updateOrder} from '../ser
 import {getUser} from "../services/user.service.js";
 
 const newOrder = async (req: Request, res: Response) => {
+    /*
+    #swagger.tags = ['Orders']
+    #swagger.description = 'new order'
+    #swagger.parameters['Type step'] = {
+        in: 'body',
+        required: true,
+        schema: { $ref: "#/definitions/Order" }
+   }
+    */
     try {
         const user = await getUser(req.body.userId)
         if (user) {
@@ -17,6 +26,8 @@ const newOrder = async (req: Request, res: Response) => {
 }
 
 const getOrderById = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Orders']
+    #swagger.description = 'get order' */
     try {
         getOrder(req.params.id).then(
             data => {
@@ -35,12 +46,13 @@ const getOrderById = (req: Request, res: Response) => {
 }
 
 const updateOrderById = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Orders']
+    #swagger.description = 'update order' */
     try {
         updateOrder(req.params.id, req.body).then(data => {
             if (data) {
                 res.status(200).send(data);
-            }
-            else {
+            } else {
                 res.status(404).send('Not Found');
             }
         }).catch(err => {
@@ -53,12 +65,13 @@ const updateOrderById = (req: Request, res: Response) => {
 }
 
 const deleteOrderById = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Orders']
+    #swagger.description = 'delete order' */
     try {
         deleteOrder(req.params.id).then(data => {
             if (data) {
                 res.status(200).send(data);
-            }
-            else {
+            } else {
                 res.status(404).send('Not Found');
             }
         }).catch(err => {
@@ -71,6 +84,8 @@ const deleteOrderById = (req: Request, res: Response) => {
 }
 
 const getOrdersWithFilter = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Orders']
+    #swagger.description = 'get orders' */
     try {
         getOrders().then(data => res.status(200).send(data)).catch(err => {
             console.error(err.message + '\n' + err.stack)

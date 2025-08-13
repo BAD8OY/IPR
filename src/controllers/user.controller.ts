@@ -2,6 +2,8 @@ import {Request, Response} from 'express';
 import {createUser, deleteUser, getUser, getUsers, updateUser} from '../services/user.service.js';
 
 const newUser = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Users']
+    #swagger.description = 'new user' */
     try {
         createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(201).send(data)).catch(err => {
             console.error(err.message + '\n' + err.stack)
@@ -13,6 +15,8 @@ const newUser = (req: Request, res: Response) => {
 }
 
 const getUserById = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Users']
+    #swagger.description = 'get user' */
     try {
         getUser(req.params.id).then(data => {
             if (data) {
@@ -31,6 +35,8 @@ const getUserById = (req: Request, res: Response) => {
 }
 
 const updateUserById = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Users']
+    #swagger.description = 'update user' */
     try {
         updateUser(req.params.id, req.body).then(data => {
             if (data) {
@@ -49,6 +55,8 @@ const updateUserById = (req: Request, res: Response) => {
 }
 
 const deleteUserById = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Users']
+    #swagger.description = 'delete user' */
     try {
         deleteUser(req.params.id).then(data => {
             if (data) {
@@ -67,6 +75,8 @@ const deleteUserById = (req: Request, res: Response) => {
 }
 
 const getUserWithFilter = (req: Request, res: Response) => {
+    /* 	#swagger.tags = ['Users']
+    #swagger.description = 'get users' */
     try {
         getUsers().then(data => res.status(200).send(data)).catch(err => {
             console.error(err.message + '\n' + err.stack)
