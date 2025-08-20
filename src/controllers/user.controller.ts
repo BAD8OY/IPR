@@ -18,17 +18,20 @@ const getUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'get user' */
     try {
-        getUser(req.params.id).then(data => {
-            if (data) {
-                res.status(200).send(data);
-            }
-            else {
-                res.status(404).send('Not Found');
-            }
-        }).catch(err => {
-            console.error(err.message + '\n' + err.stack);
-            res.status(502).send(null);
-        });
+        if (mongoose.isValidObjectId(req.params.id)) {
+            getUser(req.params.id).then(data => {
+                if (data) {
+                    res.status(200).send(data);
+                } else {
+                    res.status(404).send('Not Found');
+                }
+            }).catch(err => {
+                console.error(err.message + '\n' + err.stack);
+                res.status(502).send(null);
+            });
+        } else {
+            res.status(400).send('Bad request');
+        }
     } catch (e) {
         console.error(e);
     }
@@ -41,8 +44,7 @@ const updateUserById = (req: Request, res: Response) => {
         updateUser(req.params.id, req.body).then(data => {
             if (data) {
                 res.status(200).send(data);
-            }
-            else {
+            } else {
                 res.status(404).send('Not Found');
             }
         }).catch(err => {
@@ -61,8 +63,7 @@ const deleteUserById = (req: Request, res: Response) => {
         deleteUser(req.params.id).then(data => {
             if (data) {
                 res.status(200).send(data);
-            }
-            else {
+            } else {
                 res.status(404).send('Not Found');
             }
         }).catch(err => {

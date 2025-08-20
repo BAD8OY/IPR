@@ -13,12 +13,12 @@ const swaggerSpec = swaggerJSDoc(config.swagger);
 /** Start Server */
 const StartServer = () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-    /** Log the request */
     router.use((req, res, next) => {
-        /** Log the req */
-        console.info(`Incoming request - METHOD: [${req.method}] - URL: [${req.url}]`);
-
+        res.on('finish', () => {
+            console.info(`Incoming request - METHOD: [${req.method}] - URL: [${req.url}] - ${res.statusCode}`);
+        });
+        let ip_adress = (req.socket.remoteAddress);
+        console.log(ip_adress);
         next();
     });
 

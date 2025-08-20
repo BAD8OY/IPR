@@ -29,17 +29,20 @@ const getOrderById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
     #swagger.description = 'get order' */
     try {
-        getOrder(req.params.id).then(
-            data => {
+        if (isNaN(req.params.id)) {
+            res.status(400).send('Bad request');
+        } else {
+            getOrder(req.params.id).then(data => {
                 if (data) {
-                    res.status(200).send(data)
+                    res.status(200).send(data);
                 } else {
-                    res.status(404).send('Not Found')
+                    res.status(404).send('Not Found');
                 }
             }).catch(err => {
-            console.error(err.message + '\n' + err.stack)
-            res.status(502).send(null)
-        })
+                console.error(err.message + '\n' + err.stack);
+                res.status(502).send(null);
+            });
+        }
     } catch (e) {
         console.error(e);
     }

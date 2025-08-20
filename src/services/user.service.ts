@@ -17,7 +17,7 @@ async function createUser(email: string, name: string, profile: string) {
  * GET /users/:id — получить пользователя по id
  */
 async function getUser(userId: string): Promise<IUser> {
-    return User.findById(userId).then(data => data._doc);
+    return User.findById(userId).then(data => data?._doc);
 
 }
 
