@@ -6,10 +6,14 @@ const newUser = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'new user' */
     try {
-        createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(201).send(data)).catch(err => {
-            console.error(err.message + '\n' + err.stack)
-            res.status(502).send(null)
-        })
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+        } else {
+            createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(201).send(data)).catch(err => {
+                console.error(err.message + '\n' + err.stack)
+                res.status(502).send(null)
+            })
+        }
     } catch (e) {
         console.error(e);
     }
