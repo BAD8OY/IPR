@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 import {createUser, deleteUser, getUser, getUsers, updateUser} from '../services/user.service.js';
+import mongoose from "mongoose";
 
 const newUser = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
@@ -18,7 +19,9 @@ const getUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'get user' */
     try {
-        if (mongoose.isValidObjectId(req.params.id)) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+        } else if (mongoose.isValidObjectId(req.params.id)) {
             getUser(req.params.id).then(data => {
                 if (data) {
                     res.status(200).send(data);
@@ -30,7 +33,7 @@ const getUserById = (req: Request, res: Response) => {
                 res.status(502).send(null);
             });
         } else {
-            res.status(400).send('Bad request');
+            res.status(400).send('Not valid id');
         }
     } catch (e) {
         console.error(e);
@@ -41,16 +44,22 @@ const updateUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'update user' */
     try {
-        updateUser(req.params.id, req.body).then(data => {
-            if (data) {
-                res.status(200).send(data);
-            } else {
-                res.status(404).send('Not Found');
-            }
-        }).catch(err => {
-            console.error(err.message + '\n' + err.stack);
-            res.status(502).send(null);
-        });
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+        } else if (mongoose.isValidObjectId(req.params.id)) {
+            updateUser(req.params.id, req.body).then(data => {
+                if (data) {
+                    res.status(200).send(data);
+                } else {
+                    res.status(404).send('Not Found');
+                }
+            }).catch(err => {
+                console.error(err.message + '\n' + err.stack);
+                res.status(502).send(null);
+            });
+        } else {
+            res.status(400).send('Not valid id');
+        }
     } catch (e) {
         console.error(e);
     }
@@ -60,16 +69,22 @@ const deleteUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'delete user' */
     try {
-        deleteUser(req.params.id).then(data => {
-            if (data) {
-                res.status(200).send(data);
-            } else {
-                res.status(404).send('Not Found');
-            }
-        }).catch(err => {
-            console.error(err.message + '\n' + err.stack)
-            res.status(502).send(null)
-        });
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+        } else if (mongoose.isValidObjectId(req.params.id)) {
+            deleteUser(req.params.id).then(data => {
+                if (data) {
+                    res.status(200).send(data);
+                } else {
+                    res.status(404).send('Not Found');
+                }
+            }).catch(err => {
+                console.error(err.message + '\n' + err.stack)
+                res.status(502).send(null)
+            });
+        } else {
+            res.status(400).send('Not valid id');
+        }
     } catch (e) {
         console.error(e);
     }
@@ -79,10 +94,14 @@ const getUserWithFilter = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'get users' */
     try {
-        getUsers().then(data => res.status(200).send(data)).catch(err => {
-            console.error(err.message + '\n' + err.stack)
-            res.status(502).send(null)
-        })
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+        } else {
+            getUsers().then(data => res.status(200).send(data)).catch(err => {
+                console.error(err.message + '\n' + err.stack)
+                res.status(502).send(null)
+            })
+        }
     } catch (e) {
         console.error(e);
     }

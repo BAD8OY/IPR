@@ -12,7 +12,7 @@ async function createOrder(userId, amount: number) {
  * GET /orders/:id — получить заказ по id
  */
 async function getOrder(id: number): Promise<Order> {
-    return await Order.findByPk(id)
+    return await Order.findByPk(id);
     // .then(data => data).catch(e => null);
 }
 

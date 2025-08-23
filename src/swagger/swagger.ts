@@ -1,4 +1,7 @@
 import swaggerAutogen from "swagger-autogen";
+import dotenv from 'dotenv'
+
+dotenv.config({path: '../../.env'});
 
 const doc = {
 // заголовки
@@ -6,11 +9,19 @@ const doc = {
         title: 'IPR',
         description: 'Documentation'
     },
-    host: "localhost:8082",
+    host: `localhost:${process.env.SERVER_PORT}`,
     basePath: "/",
     schemes: ['http', 'https'],
     consumes: ['application/json'],
     produces: ['application/json'],
+    securityDefinitions: {
+        Bearer: {
+            type: 'apiKey',
+            in: 'header',
+            name: 'authorization',
+            description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345"'
+        }
+    },
 // группировка по эндпойнтам
     tags: [
         {
@@ -43,7 +54,7 @@ const doc = {
 // путь к автоматически сгенерированному файлу
 const outputFile = './output.json';
 // путь к файлу с описанием адресов роутеров
-const endpointsFiles = ['../routes/order.routes.js', '../routes/user.routes.js'];
+const endpointsFiles = ['../routes/order.routes.js', '../routes/user.routes.js', "../routes/auth.routes.js"];
 
 // путь к главному файлу с которого стартует сервер
 swaggerAutogen( /*options*/)(outputFile, endpointsFiles, doc).then(() => {

@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 import console from '../utils/logger.js'
+import dotenv from "dotenv";
 
-const URL: string = process.env.MONGO_URL ? process.env.MONGO_URL : "mongodb://root:root@localhost:27017/users?authSource=admin"
+dotenv.config();
+
+const URL: string = process.env.MONGO_URL;
 
 async function connectToMongo() {
     try {

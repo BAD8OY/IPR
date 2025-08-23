@@ -3,10 +3,9 @@
 // amount (number)
 // status (string: 'pending' | 'paid' | 'canceled')
 // createdAt (datetime)
+import {Table, Column, Model, DataType, AutoIncrement, PrimaryKey} from 'sequelize-typescript';
 
 type Status = 'pending' | 'paid' | 'canceled';
-
-import {Table, Column, Model, DataType, AutoIncrement, PrimaryKey} from 'sequelize-typescript';
 
 @Table({
     tableName: 'Order',

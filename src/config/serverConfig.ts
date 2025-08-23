@@ -1,14 +1,12 @@
-// import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
-// dotenv.config();
-
-const SERVER_PORT: number = 8082;
+dotenv.config({ path: '../.env' });
 
 const BASE_URL: string = '';
 
 export const config = {
     server: {
-        port: SERVER_PORT
+        port: process.env.SERVER_PORT
     },
     service_addr: {
         base_url: BASE_URL
