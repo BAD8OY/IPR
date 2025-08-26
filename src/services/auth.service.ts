@@ -1,16 +1,23 @@
 import {Emp} from "../models/pg/emp.model.js";
+import bcrypt from "bcrypt";
 
 async function createEmp(login: string, password: string) {
-    await Emp.create({login: login, password: password});
+    bcrypt.hash(password, 10, async function (err, hash: string) {
+        await Emp.create({login: login, password: hash});
+    });
 }
 
 async function getEmp(login: string, password: string): Promise<Emp> {
-    return await Emp.findOne({
+    let emp: Emp = await Emp.findOne({
         where: {
-            login: login,
-            password: password,
-        },
+            login: login
+        }
     });
+    if (await bcrypt.compare(password, emp.password).then(function(result: boolean) {
+        return result;
+    })) {
+        return emp;
+    }
 }
 
 async function getEmpById(id: number): Promise<Emp> {
