@@ -45,27 +45,17 @@
 				{
 					"name": "order",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzU1OTU5Njg1fQ.V8r2T6upIB7qNVdptF7P8X9Rbn2JTuqaBtbIIyugLkc",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8082/orders/2",
+							"raw": "localhost:8082/orders/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8082",
 							"path": [
 								"orders",
-								"2"
+								"1"
 							]
 						}
 					},
@@ -74,16 +64,6 @@
 				{
 					"name": "update",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzU1OTYxMTc5fQ.PnVze2u68u6EhDcuAGyzr6ett5ocK6UwMn25LuYgCfU",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -96,14 +76,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8082/orders/2",
+							"raw": "localhost:8082/orders/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8082",
 							"path": [
 								"orders",
-								"2"
+								"1"
 							]
 						}
 					},
@@ -133,14 +113,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8082/orders/6",
+							"raw": "localhost:8082/orders/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8082",
 							"path": [
 								"orders",
-								"6"
+								"1"
 							]
 						}
 					},
@@ -195,14 +175,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8082/users/пваравр",
+							"raw": "localhost:8082/users/689263d269d12bef18c33a4d",
 							"host": [
 								"localhost"
 							],
 							"port": "8082",
 							"path": [
 								"users",
-								"пваравр"
+								"689263d269d12bef18c33a4d"
 							]
 						}
 					},
@@ -257,16 +237,6 @@
 				{
 					"name": "delete",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzU1OTYxMTc5fQ.PnVze2u68u6EhDcuAGyzr6ett5ocK6UwMn25LuYgCfU",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -291,6 +261,9 @@
 				{
 					"name": "api/auth/register",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -298,12 +271,12 @@
 							"urlencoded": [
 								{
 									"key": "login",
-									"value": "log2",
+									"value": "log",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "pass2",
+									"value": "pass",
 									"type": "text"
 								}
 							]
@@ -326,6 +299,9 @@
 				{
 					"name": "api/auth/login",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -333,12 +309,12 @@
 							"urlencoded": [
 								{
 									"key": "login",
-									"value": "log2",
+									"value": "log",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "pass2",
+									"value": "pass",
 									"type": "text"
 								}
 							]
@@ -360,5 +336,8 @@
 				}
 			]
 		}
-	]
+	],
+	"auth": {
+		"type": "bearer"
+	}
 }
