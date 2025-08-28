@@ -4,7 +4,7 @@ import {Order} from "../models/pg/order.model.js";
 /**
  * POST /orders — создать заказ
  */
-async function createOrder(userId, amount: number) {
+async function createOrder(userId: string, amount: number) {
     await Order.create({userId: userId, amount: amount, status: "pending", createdAt: Date.now()});
 }
 
@@ -13,7 +13,6 @@ async function createOrder(userId, amount: number) {
  */
 async function getOrder(id: number): Promise<Order> {
     return await Order.findByPk(id);
-    // .then(data => data).catch(e => null);
 }
 
 /**
