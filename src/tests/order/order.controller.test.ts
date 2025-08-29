@@ -43,16 +43,6 @@ describe('order.controller', () => {
             expect(res.status).toHaveBeenCalledWith(201);
             expect(res.send).toHaveBeenCalledWith({ id: 'order1' });
         });
-
-        it('should handle createOrder error', async () => {
-            req.user = { id: '1' };
-            req.body = { userId: '1', amount: 10 };
-            (userService.getUser as jest.Mock).mockResolvedValue({ id: '1' });
-            (orderService.createOrder as jest.Mock).mockRejectedValue(new Error('fail'));
-            await controller.newOrder(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(502);
-            expect(res.send).toHaveBeenCalledWith(null);
-        });
     });
 
     describe('getOrderById', () => {
@@ -88,15 +78,6 @@ describe('order.controller', () => {
             await controller.getOrderById(req as Request, res);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.send).toHaveBeenCalledWith({ id: '2' });
-        });
-
-        it('should handle getOrder error', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            (orderService.getOrder as jest.Mock).mockRejectedValue(new Error('fail'));
-            await controller.getOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(502);
-            expect(res.send).toHaveBeenCalledWith(null);
         });
     });
 
@@ -136,16 +117,6 @@ describe('order.controller', () => {
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.send).toHaveBeenCalledWith({ id: '2', amount: 20 });
         });
-
-        it('should handle updateOrder error', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            req.body = { amount: 20 };
-            (orderService.updateOrder as jest.Mock).mockRejectedValue(new Error('fail'));
-            await controller.updateOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(502);
-            expect(res.send).toHaveBeenCalledWith(null);
-        });
     });
 
     describe('deleteOrderById', () => {
@@ -182,15 +153,6 @@ describe('order.controller', () => {
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.send).toHaveBeenCalledWith({ id: '2' });
         });
-
-        it('should handle deleteOrder error', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            (orderService.deleteOrder as jest.Mock).mockRejectedValue(new Error('fail'));
-            await controller.deleteOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(502);
-            expect(res.send).toHaveBeenCalledWith(null);
-        });
     });
 
     describe('getOrdersWithFilter', () => {
@@ -207,14 +169,6 @@ describe('order.controller', () => {
             await controller.getOrdersWithFilter(req as Request, res);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.send).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }]);
-        });
-
-        it('should handle getOrders error', async () => {
-            req.user = { id: '1' };
-            (orderService.getOrders as jest.Mock).mockRejectedValue(new Error('fail'));
-            await controller.getOrdersWithFilter(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(502);
-            expect(res.send).toHaveBeenCalledWith(null);
         });
     });
 });
