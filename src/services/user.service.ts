@@ -18,7 +18,6 @@ async function createUser(email: string, name: string, profile: string) {
  */
 async function getUser(userId: string): Promise<IUser> {
     return User.findById(userId).then(data => data?._doc);
-
 }
 
 /**

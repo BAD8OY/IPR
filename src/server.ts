@@ -5,11 +5,9 @@ import {config} from './config/serverConfig.js';
 import {orderRouter} from './routes/order.routes.js';
 import {userRouter} from './routes/user.routes.js';
 import {authRouter} from './routes/auth.routes.js';
-import swaggerJSDoc from "swagger-jsdoc";
+import {authorizationMiddleware} from "./middlewares/auth.middleware.js";
 import swaggerUi from "swagger-ui-express";
-import jwt from "jsonwebtoken";
 import dotenv from 'dotenv'
-import {getEmpById} from "./services/auth.service.js";
 
 dotenv.config({path: '../.env'});
 
@@ -18,26 +16,7 @@ import swaggerFile from "../out/swagger/output.json" with { type: "json" };
 
 /** Start Server */
 const StartServer = () => {
-    router.use((req, res, next) => {
-        res.on('finish', () => {
-            console.info(`Incoming request - METHOD: [${req.method}] - URL: [${req.url}] - ${res.statusCode}`);
-        });
-        let ip_adress = (req.socket.remoteAddress);
-        console.log(ip_adress);
-        if (req.headers.authorization) {
-            jwt.verify(req.headers.authorization.split(' ')[1], process.env.TOKEN, async (err, payload) => {
-                if (err) next();
-                else if (payload) {
-                    req.user = await getEmpById(payload.id);
-                    next();
-                    if (!req.user) next();
-                }
-            });
-        } else {
-            next();
-        }
-    });
-
+    router.use(authorizationMiddleware);
     router.use(express.urlencoded({extended: true}));
     router.use(express.json());
 
