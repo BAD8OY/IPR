@@ -36,7 +36,7 @@ async function updateOrder(id: number, updateData: Partial<Order>) {
 async function deleteOrder(id: number) {
     const order: Order = await getOrder(id);
     if (order) {
-       await order.destroy();
+        await order.destroy();
         return true;
     }
     return null;

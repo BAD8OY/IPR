@@ -22,8 +22,10 @@ const newOrder = async (req: Request, res: Response) => {
         } else if (user) {
             createOrder(req.body.userId, req.body.amount).then(data => res.status(201).send(data)).catch(err => {
                 console.error(err.message + '\n' + err.stack)
-                res.status(502).send(null)
+                res.status(502).send(null);
             })
+        } else {
+            res.status(400).send('Not found user by Id');
         }
     } catch (e) {
         console.error(e);
@@ -39,10 +41,10 @@ const getOrderById = (req: Request, res: Response) => {
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
-        } else if (isNaN(req.params.id)) {
+        } else if (isNaN(Number(req.params.id))) {
             res.status(400).send('Bad request');
         } else {
-            getOrder(req.params.id).then(data => {
+            getOrder(Number(req.params.id)).then(data => {
                 if (data) {
                     res.status(200).send(data);
                 } else {
@@ -67,10 +69,10 @@ const updateOrderById = (req: Request, res: Response) => {
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
-        } else if (isNaN(req.params.id)) {
+        } else if (isNaN(Number(req.params.id))) {
             res.status(400).send('Bad request');
         } else {
-            updateOrder(req.params.id, req.body).then(data => {
+            updateOrder(Number(req.params.id), req.body).then(data => {
                 if (data) {
                     res.status(200).send(data);
                 } else {
@@ -95,10 +97,10 @@ const deleteOrderById = (req: Request, res: Response) => {
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
-        } else if (isNaN(req.params.id)) {
+        } else if (isNaN(Number(req.params.id))) {
             res.status(400).send('Bad request');
         } else {
-            deleteOrder(req.params.id).then(data => {
+            deleteOrder(Number(req.params.id)).then(data => {
                 if (data) {
                     res.status(200).send(data);
                 } else {
