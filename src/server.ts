@@ -14,7 +14,7 @@ import {getEmpById} from "./services/auth.service.js";
 dotenv.config({path: '../.env'});
 
 const router = express();
-const swaggerSpec = swaggerJSDoc(config.swagger);
+import swaggerFile from "../out/swagger/output.json" with { type: "json" };
 
 /** Start Server */
 const StartServer = () => {
@@ -58,7 +58,7 @@ const StartServer = () => {
     router.use('/', orderRouter);
     router.use('/', userRouter);
     router.use('/', authRouter);
-    router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
     /** Error handling */
     router.use((req, res, next) => {

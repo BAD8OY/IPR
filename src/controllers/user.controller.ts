@@ -4,7 +4,10 @@ import mongoose from "mongoose";
 
 const newUser = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
-    #swagger.description = 'new user' */
+    #swagger.description = 'new user'
+    #swagger.security = [{
+            "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -21,7 +24,10 @@ const newUser = (req: Request, res: Response) => {
 
 const getUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
-    #swagger.description = 'get user' */
+    #swagger.description = 'get user'
+    #swagger.security = [{
+            "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -46,7 +52,10 @@ const getUserById = (req: Request, res: Response) => {
 
 const updateUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
-    #swagger.description = 'update user' */
+    #swagger.description = 'update user'
+    #swagger.security = [{
+            "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -71,7 +80,10 @@ const updateUserById = (req: Request, res: Response) => {
 
 const deleteUserById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
-    #swagger.description = 'delete user' */
+    #swagger.description = 'delete user'
+    #swagger.security = [{
+            "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -96,7 +108,10 @@ const deleteUserById = (req: Request, res: Response) => {
 
 const getUserWithFilter = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
-    #swagger.description = 'get users' */
+    #swagger.description = 'get users'
+    #swagger.security = [{
+        "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');

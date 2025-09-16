@@ -10,7 +10,10 @@ const newOrder = async (req: Request, res: Response) => {
         in: 'body',
         required: true,
         schema: { $ref: "#/definitions/Order" }
-   }
+    }
+    #swagger.security = [{
+            "Bearer": []
+    }]
     */
     try {
         const user = await getUser(req.body.userId);
@@ -29,7 +32,10 @@ const newOrder = async (req: Request, res: Response) => {
 
 const getOrderById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
-    #swagger.description = 'get order' */
+    #swagger.description = 'get order'
+    #swagger.security = [{
+            "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -54,7 +60,10 @@ const getOrderById = (req: Request, res: Response) => {
 
 const updateOrderById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
-    #swagger.description = 'update order' */
+    #swagger.description = 'update order'
+    #swagger.security = [{
+        "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -79,7 +88,10 @@ const updateOrderById = (req: Request, res: Response) => {
 
 const deleteOrderById = (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
-    #swagger.description = 'delete order' */
+    #swagger.description = 'delete order'
+    #swagger.security = [{
+            "Bearer": []
+    }] */
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
