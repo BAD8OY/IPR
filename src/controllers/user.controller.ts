@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
-import {createUser, deleteUser, getUser, getUsers, updateUser} from '../services/user.service.js';
+import {createUser, deleteUser, getUser, getUserByEmail, getUsers, updateUser} from '../services/user.service.js';
 import mongoose from "mongoose";
 
-const newUser = (req: Request, res: Response) => {
+const newUser = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
     #swagger.description = 'new user'
     #swagger.security = [{
@@ -12,6 +12,11 @@ const newUser = (req: Request, res: Response) => {
         if (!req.user) {
             res.status(401).send('Unauthorized');
         } else {
+            let user = await getUserByEmail(req.body.email);
+            if (user) {
+                res.status(400).send('Пользователь с таким email уже существует');
+                return;
+            }
             createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(201).send(data)).catch(err => {
                 console.error(err.message + '\n' + err.stack)
                 res.status(502).send(null)

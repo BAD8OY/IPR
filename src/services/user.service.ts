@@ -21,6 +21,13 @@ async function getUser(userId: string): Promise<IUser> {
 }
 
 /**
+ * GET /users/:id — получить пользователя по id
+ */
+async function getUserByEmail(email: string): Promise<IUser> {
+    return User.findOne({email: email}).then(data => data?._doc);
+}
+
+/**
  * PUT /users/:id — обновить пользователя
  */
 async function updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser> {
@@ -53,4 +60,4 @@ async function getUsers(): Promise<IUser[]> {
     return User.find();
 }
 
-export {createUser, getUser, updateUser, deleteUser, getUsers}
+export {createUser, getUser, getUserByEmail, updateUser, deleteUser, getUsers}
