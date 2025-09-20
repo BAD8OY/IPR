@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import {createOrder, deleteOrder, getOrder, getOrders, updateOrder} from '../services/order.service.js';
 import {getUser} from "../services/user.service.js";
+import {orderSchemaZod} from "../models/pg/order.model.js";
 
 const newOrder = async (req: Request, res: Response) => {
     /*
@@ -16,16 +17,20 @@ const newOrder = async (req: Request, res: Response) => {
     }]
     */
     try {
-        const user = await getUser(req.body.userId);
         if (!req.user) {
             res.status(401).send('Unauthorized');
-        } else if (user) {
-            createOrder(req.body.userId, req.body.amount).then(data => res.status(201).send(data)).catch(err => {
-                console.error(err.message + '\n' + err.stack)
-                res.status(502).send(null);
-            })
+        } else if (orderSchemaZod.safeParse(req.body).success) {
+            const user = await getUser(req.body.userId);
+            if (user) {
+                createOrder(req.body.userId, req.body.amount).then(data => res.status(201).send(data)).catch(err => {
+                    console.error(err.message + '\n' + err.stack)
+                    res.status(502).send(null);
+                })
+            } else {
+                res.status(400).send('Not found user by Id');
+            }
         } else {
-            res.status(400).send('Not found user by Id');
+            res.status(400).send('Not valid data');
         }
     } catch (e) {
         console.error(e);
@@ -69,7 +74,7 @@ const updateOrderById = (req: Request, res: Response) => {
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
-        } else if (isNaN(Number(req.params.id))) {
+        } else if (isNaN(Number(req.params.id)) || !orderSchemaZod.safeParse(req.body).success) {
             res.status(400).send('Bad request');
         } else {
             updateOrder(Number(req.params.id), req.body).then(data => {

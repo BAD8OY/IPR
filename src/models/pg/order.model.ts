@@ -1,4 +1,5 @@
 import {Table, Column, Model, DataType, AutoIncrement, PrimaryKey} from 'sequelize-typescript';
+import z from "zod";
 
 type Status = 'pending' | 'paid' | 'canceled';
 
@@ -40,4 +41,11 @@ export class Order extends Model<Order> {
     createdAt!: number;
 }
 
-// export default Order;
+
+export const orderSchemaZod = z.object({
+    id: z.number().int().optional(), // auto-increment, usually not required on create
+    userId: z.string().regex(/^[a-f\d]{24}$/i).optional(), // MongoDB ObjectId
+    amount: z.string().regex(/^\d+$/).optional(),
+    status: z.enum(['pending', 'paid', 'canceled']).optional(),
+    createdAt: z.coerce.date().optional(),
+});

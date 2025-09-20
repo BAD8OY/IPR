@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import {createUser, deleteUser, getUser, getUserByEmail, getUsers, updateUser} from '../services/user.service.js';
 import mongoose from "mongoose";
+import {userSchemaZod} from "../models/mongo/user.model.js";
 
 const newUser = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']
@@ -15,6 +16,9 @@ const newUser = async (req: Request, res: Response) => {
             let user = await getUserByEmail(req.body.email);
             if (user) {
                 res.status(400).send('Пользователь с таким email уже существует');
+                return;
+            } else if (!userSchemaZod.safeParse(req.body).success) {
+                res.status(400).send('not valid data');
                 return;
             }
             createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(201).send(data)).catch(err => {
@@ -64,7 +68,7 @@ const updateUserById = (req: Request, res: Response) => {
     try {
         if (!req.user) {
             res.status(401).send('Unauthorized');
-        } else if (mongoose.isValidObjectId(req.params.id)) {
+        } else if (userSchemaZod.safeParse(req.body).success) {
             updateUser(req.params.id, req.body).then(data => {
                 if (data) {
                     res.status(200).send(data);
@@ -76,7 +80,7 @@ const updateUserById = (req: Request, res: Response) => {
                 res.status(502).send(null);
             });
         } else {
-            res.status(400).send('Not valid id');
+            res.status(400).send('Not valid data');
         }
     } catch (e) {
         console.error(e);

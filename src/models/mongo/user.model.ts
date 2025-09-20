@@ -1,3 +1,4 @@
+import z from "zod";
 import {Schema, model, Document} from 'mongoose';
 
 interface DocumentResult<T> extends Document {
@@ -24,5 +25,21 @@ const userSchema = new Schema<IUser>({
 });
 
 const User = model<IUser>('User', userSchema);
+
+export const userSchemaZod = z.object({
+    email: z.email().optional(),
+    name: z.string().optional(),
+    profile: z.string().refine(
+        (str) => {
+            try {
+                JSON.parse(str);
+                return true;
+            } catch {
+                return false;
+            }
+        }).optional(),
+    createdAt: z.date().optional()
+});
+
 
 export default User;
