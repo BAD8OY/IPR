@@ -1,11 +1,24 @@
-// Реализовать логирование запросов и ошибок (например, с помощью winston и для красоты можно использовать chalk).
-// Логи должны содержать дату, метод, url, статус ответа, ip клиента.
+import pino from 'pino';
+import pretty from 'pino-pretty';
+import {createWriteStream} from 'fs';
 
-import chalk from 'chalk';
+
+const fileStream = createWriteStream('log.txt', {flags: 'a'});
+const consoleStream = pretty({colorize: true, destination: process.stdout});
+const streams = [
+    {
+        level: 'debug',
+        stream: fileStream
+    },
+    {
+        level: 'info',
+        stream: consoleStream
+    }]
+const logger = pino({level: 'info'}, pino.multistream(streams));
 
 export default class console {
-    public static log = (args: any) => global.console.log(chalk.blue(`[${new Date().toLocaleString()}] [LOG]`), typeof args === 'string' ? chalk.blueBright(args) : args);
-    public static info = (args: any) => global.console.log(chalk.green(`[${new Date().toLocaleString()}] [INFO]`), typeof args === 'string' ? chalk.greenBright(args) : args);
-    public static warning = (args: any) => global.console.log(chalk.yellow(`[${new Date().toLocaleString()}] [WARN]`), typeof args === 'string' ? chalk.yellowBright(args) : args);
-    public static error = (args: any) => global.console.log(chalk.red(`[${new Date().toLocaleString()}] [ERROR]`), typeof args === 'string' ? chalk.redBright(args) : args);
+    public static log = (args: any) => logger.info(args);
+    public static info = (args: any) => logger.info(args);
+    public static warning = (args: any) => logger.warn(args);
+    public static error = (args: any) => logger.error(args);
 }
