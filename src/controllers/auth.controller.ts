@@ -1,7 +1,9 @@
 import {Request, Response} from 'express';
-import {createEmp, getEmp} from '../services/auth.service.js';
 import dotenv from 'dotenv'
 import jwt from "jsonwebtoken";
+
+import {createEmp, getEmp} from '../services/auth.service.js';
+import {Emp} from "../models/pg/emp.model.js";
 
 dotenv.config();
 

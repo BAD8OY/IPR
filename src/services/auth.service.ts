@@ -1,5 +1,5 @@
-import {Emp} from "../models/pg/emp.model.js";
 import bcrypt from "bcrypt";
+import {Emp} from "../models/pg/emp.model.js";
 
 async function createEmp(login: string, password: string) {
     bcrypt.hash(password, 10, async function (err, hash: string) {
@@ -8,7 +8,7 @@ async function createEmp(login: string, password: string) {
 }
 
 async function getEmp(login: string, password: string): Promise<Emp> {
-    let emp: Emp = await Emp.findOne({
+    const emp: Emp = await Emp.findOne({
         where: {
             login: login
         }

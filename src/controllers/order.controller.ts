@@ -1,7 +1,8 @@
 import {Request, Response} from 'express';
 import {createOrder, deleteOrder, getOrder, getOrders, updateOrder} from '../services/order.service.js';
 import {getUser} from "../services/user.service.js";
-import {orderSchemaZod} from "../models/pg/order.model.js";
+import {Order, orderSchemaZod} from "../models/pg/order.model.js";
+import {IUser} from "../models/mongo/user.model";
 
 const newOrder = async (req: Request, res: Response) => {
     /*

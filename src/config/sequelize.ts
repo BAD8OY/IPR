@@ -1,8 +1,8 @@
+import {Sequelize} from 'sequelize-typescript';
+import dotenv from 'dotenv';
 import console from '../utils/logger.js'
 import {Order} from '../models/pg/order.model.js';
 import {Emp} from '../models/pg/emp.model.js';
-import {Sequelize} from 'sequelize-typescript';
-import dotenv from 'dotenv';
 
 dotenv.config();
 

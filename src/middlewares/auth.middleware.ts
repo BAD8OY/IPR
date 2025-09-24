@@ -7,7 +7,7 @@ export const authorizationMiddleware = async (req: Request, res: Response, next:
     res.on('finish', () => {
         console.info(`Incoming request - METHOD: [${req.method}] - URL: [${req.url}] - ${res.statusCode}`);
     });
-    let ip_adress = (req.socket.remoteAddress);
+    const ip_adress = (req.socket.remoteAddress);
     console.log(ip_adress);
     if (req.headers.authorization) {
         jwt.verify(

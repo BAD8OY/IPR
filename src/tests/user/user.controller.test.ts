@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import controller from '../../controllers/user.controller.js';
 import * as userService from '../../services/user.service.js';
 

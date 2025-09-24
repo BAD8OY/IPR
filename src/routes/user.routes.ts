@@ -1,7 +1,7 @@
 import express from "express";
 import controller from "../controllers/user.controller.js";
 
-const userRouter = express.Router()
+const userRouter = express.Router();
 
 
 userRouter.post('/users', controller.newUser);

@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
-import {createUser, deleteUser, getUser, getUserByEmail, getUsers, updateUser} from '../services/user.service.js';
 import mongoose from "mongoose";
-import {userSchemaZod} from "../models/mongo/user.model.js";
+import {createUser, deleteUser, getUser, getUserByEmail, getUsers, updateUser} from '../services/user.service.js';
+import {IUser, userSchemaZod} from "../models/mongo/user.model.js";
 
 const newUser = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Users']

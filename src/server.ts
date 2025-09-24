@@ -1,13 +1,14 @@
 import express from 'express';
+import dotenv from 'dotenv'
+import swaggerUi from "swagger-ui-express";
 import * as http from "http";
+
 import console from './utils/logger.js'
 import {config} from './config/serverConfig.js';
 import {orderRouter} from './routes/order.routes.js';
 import {userRouter} from './routes/user.routes.js';
 import {authRouter} from './routes/auth.routes.js';
-import {authorizationMiddleware} from "./middlewares/auth.middleware.js";
-import swaggerUi from "swagger-ui-express";
-import dotenv from 'dotenv'
+import swaggerFile from "../out/swagger/output.json" with {type: "json"};
 
 dotenv.config({path: '../.env'});
 
