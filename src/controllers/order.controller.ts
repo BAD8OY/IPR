@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import {createOrder, deleteOrder, getOrder, getOrders, updateOrder} from '../services/order.service.js';
 import {getUser} from "../services/user.service.js";
-import {Order, orderSchemaZod} from "../models/pg/order.model.js";
+import {Order} from "../models/pg/order.model.js";
 import {IUser} from "../models/mongo/user.model";
 
 const newOrder = async (req: Request, res: Response) => {
@@ -18,127 +18,88 @@ const newOrder = async (req: Request, res: Response) => {
     }]
     */
     try {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-        } else if (orderSchemaZod.safeParse(req.body).success) {
-            const user = await getUser(req.body.userId);
-            if (user) {
-                createOrder(req.body.userId, req.body.amount).then(data => res.status(201).send(data)).catch(err => {
-                    console.error(err.message + '\n' + err.stack)
-                    res.status(502).send(null);
-                })
-            } else {
-                res.status(400).send('Not found user by Id');
-            }
+        const user: IUser = await getUser(req.body.userId);
+        if (user) {
+            const data = await createOrder(req.body.userId, req.body.amount);
+            res.status(201).send(data);
         } else {
-            res.status(400).send('Not valid data');
+            res.status(400).send('Not found user by Id');
         }
     } catch (e) {
         console.error(e);
+        res.status(502).send(null);
     }
 }
 
-const getOrderById = (req: Request, res: Response) => {
+const getOrderById = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
     #swagger.description = 'get order'
     #swagger.security = [{
             "Bearer": []
     }] */
     try {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-        } else if (isNaN(Number(req.params.id))) {
-            res.status(400).send('Bad request');
+        const data: Order = await getOrder(Number(req.params.id));
+        if (data) {
+            res.status(200).send(data);
         } else {
-            getOrder(Number(req.params.id)).then(data => {
-                if (data) {
-                    res.status(200).send(data);
-                } else {
-                    res.status(404).send('Not Found');
-                }
-            }).catch(err => {
-                console.error(err.message + '\n' + err.stack);
-                res.status(502).send(null);
-            });
+            res.status(404).send('Not Found');
         }
     } catch (e) {
         console.error(e);
+        res.status(502).send(null);
     }
 }
 
-const updateOrderById = (req: Request, res: Response) => {
+const updateOrderById = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
     #swagger.description = 'update order'
     #swagger.security = [{
         "Bearer": []
     }] */
     try {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-        } else if (isNaN(Number(req.params.id)) || !orderSchemaZod.safeParse(req.body).success) {
-            res.status(400).send('Bad request');
+        const data = await updateOrder(Number(req.params.id), req.body);
+        if (data) {
+            res.status(200).send(data);
         } else {
-            updateOrder(Number(req.params.id), req.body).then(data => {
-                if (data) {
-                    res.status(200).send(data);
-                } else {
-                    res.status(404).send('Not Found');
-                }
-            }).catch(err => {
-                console.error(err.message + '\n' + err.stack)
-                res.status(502).send(null)
-            })
+            res.status(404).send('Not Found');
         }
     } catch (e) {
         console.error(e);
+        res.status(502).send(null);
     }
 }
 
-const deleteOrderById = (req: Request, res: Response) => {
+const deleteOrderById = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
     #swagger.description = 'delete order'
     #swagger.security = [{
             "Bearer": []
     }] */
     try {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-        } else if (isNaN(Number(req.params.id))) {
-            res.status(400).send('Bad request');
+        const data: boolean = await deleteOrder(Number(req.params.id));
+        if (data) {
+            res.status(200).send(data);
         } else {
-            deleteOrder(Number(req.params.id)).then(data => {
-                if (data) {
-                    res.status(200).send(data);
-                } else {
-                    res.status(404).send('Not Found');
-                }
-            }).catch(err => {
-                console.error(err.message + '\n' + err.stack)
-                res.status(502).send(null)
-            })
+            res.status(404).send('Not Found');
         }
     } catch (e) {
         console.error(e);
+        res.status(502).send(null);
     }
 }
 
-const getOrdersWithFilter = (req: Request, res: Response) => {
+const getOrdersWithFilter = async (req: Request, res: Response) => {
     /* 	#swagger.tags = ['Orders']
     #swagger.description = 'get orders'
     #swagger.security = [{
             "Bearer": []
     }] */
     try {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-        } else {
-            getOrders().then(data => res.status(200).send(data)).catch(err => {
-                console.error(err.message + '\n' + err.stack)
-                res.status(502).send(null)
-            })
-        }
+        const data: Order[] = await getOrders();
+        res.status(200).send(data);
     } catch (e) {
         console.error(e);
+        res.status(502).send(null);
     }
 }
 

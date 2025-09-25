@@ -11,13 +11,10 @@ import {authRouter} from './routes/auth.routes.js';
 import swaggerFile from "../out/swagger/output.json" with {type: "json"};
 
 dotenv.config({path: '../.env'});
-
 const router = express();
-import swaggerFile from "../out/swagger/output.json" with { type: "json" };
 
 /** Start Server */
 const StartServer = () => {
-    router.use(authorizationMiddleware);
     router.use(express.urlencoded({extended: true}));
     router.use(express.json());
 

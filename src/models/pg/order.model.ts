@@ -41,11 +41,14 @@ export class Order extends Model<Order> {
     createdAt!: number;
 }
 
+const orderSchemaCreateZod = z.object({
+    userId: z.string().regex(/^[a-f\d]{24}$/i), // MongoDB ObjectId
+    amount: z.string().regex(/^\d+$/),
+});
 
-export const orderSchemaZod = z.object({
-    id: z.number().int().optional(), // auto-increment, usually not required on create
-    userId: z.string().regex(/^[a-f\d]{24}$/i).optional(), // MongoDB ObjectId
+const orderSchemaUpdateZod = z.object({
     amount: z.string().regex(/^\d+$/).optional(),
     status: z.enum(['pending', 'paid', 'canceled']).optional(),
-    createdAt: z.coerce.date().optional(),
 });
+
+export {orderSchemaCreateZod, orderSchemaUpdateZod}

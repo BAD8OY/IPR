@@ -4,27 +4,28 @@ import User, {IUser} from "../models/mongo/user.model.js";
  * POST /users — создать пользователя
  */
 async function createUser(email: string, name: string, profile: string) {
-    const user: IUser = await User.create({
+    return await User.create({
         email: email,
         name: name,
         profile: JSON.parse(profile),
         createdAt: new Date(Date.now())
     });
-    console.log(user._doc._id.toString());
 }
 
 /**
  * GET /users/:id — получить пользователя по id
  */
 async function getUser(userId: string): Promise<IUser> {
-    return User.findById(userId).then(data => data?._doc);
+    const data = await User.findById(userId);
+    return data?._doc;
 }
 
 /**
  * GET /users/:id — получить пользователя по id
  */
 async function getUserByEmail(email: string): Promise<IUser> {
-    return User.findOne({email: email}).then(data => data?._doc);
+    const data = await User.findOne({email: email});
+    return data?._doc;
 }
 
 /**

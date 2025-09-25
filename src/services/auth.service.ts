@@ -2,9 +2,10 @@ import bcrypt from "bcrypt";
 import {Emp} from "../models/pg/emp.model.js";
 
 async function createEmp(login: string, password: string) {
-    bcrypt.hash(password, 10, async function (err, hash: string) {
+     bcrypt.hash(password, 10, async function (err, hash: string) {
         await Emp.create({login: login, password: hash});
     });
+     return true;
 }
 
 async function getEmp(login: string, password: string): Promise<Emp> {

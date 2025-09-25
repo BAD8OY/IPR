@@ -1,13 +1,14 @@
 import express from "express";
 import controller from "../controllers/user.controller.js";
+import {authorizationMiddleware} from "../middlewares/auth.middleware.js";
+import {validObjectId, validUserCreate, validUserUpdate} from "../middlewares/valid.middleware.js";
 
 const userRouter = express.Router();
 
-
-userRouter.post('/users', controller.newUser);
-userRouter.get('/users/:id', controller.getUserById);
-userRouter.put('/users/:id', controller.updateUserById);
-userRouter.delete('/users/:id', controller.deleteUserById);
-userRouter.get('/users', controller.getUserWithFilter);
+userRouter.post('/users', authorizationMiddleware, validUserCreate, controller.newUser);
+userRouter.get('/users/:id', authorizationMiddleware, validObjectId, controller.getUserById);
+userRouter.put('/users/:id', authorizationMiddleware, validObjectId, controller.updateUserById);
+userRouter.delete('/users/:id', authorizationMiddleware, validObjectId, validUserUpdate, controller.deleteUserById);
+userRouter.get('/users', authorizationMiddleware, controller.getUserWithFilter);
 
 export {userRouter};

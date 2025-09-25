@@ -26,7 +26,21 @@ const userSchema = new Schema<IUser>({
 
 const User = model<IUser>('User', userSchema);
 
-export const userSchemaZod = z.object({
+const userSchemaCreateZod = z.object({
+    email: z.email(),
+    name: z.string(),
+    profile: z.string().refine(
+        (str) => {
+            try {
+                JSON.parse(str);
+                return true;
+            } catch {
+                return false;
+            }
+        })
+});
+
+const userSchemaUpdateZod = z.object({
     email: z.email().optional(),
     name: z.string().optional(),
     profile: z.string().refine(
@@ -37,9 +51,9 @@ export const userSchemaZod = z.object({
             } catch {
                 return false;
             }
-        }).optional(),
-    createdAt: z.date().optional()
+        }).optional()
 });
 
+export {userSchemaCreateZod, userSchemaUpdateZod};
 
 export default User;
