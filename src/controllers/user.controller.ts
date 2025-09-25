@@ -9,21 +9,14 @@ const newUser = async (req: Request, res: Response) => {
             "Bearer": []
     }] */
     try {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-        } else {
-            let user = await getUserByEmail(req.body.email);
-            if (user) {
-                res.status(400).send('Пользователь с таким email уже существует');
-                return;
-            } else if (!userSchemaZod.safeParse(req.body).success) {
-                res.status(400).send('not valid data');
-                return;
-            }
-            createUser(req.body.email, req.body.name, req.body.profile).then(data => res.status(201).send(data)).catch(err => {
-                console.error(err.message + '\n' + err.stack)
-                res.status(502).send(null)
-            })
+        const user = await getUserByEmail(req.body.email);
+        if (user) {
+            res.status(400).send('Пользователь с таким email уже существует');
+            return;
+        }
+        const data = await createUser(req.body.email, req.body.name, req.body.profile);
+        if (data) {
+            res.status(201).send(data);
         }
     } catch (e) {
         console.error(e);
