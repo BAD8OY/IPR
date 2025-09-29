@@ -1,4 +1,4 @@
-import User, {IUser} from "../models/mongo/user.model.js";
+import {User, IUser} from "../models/mongo/user.model.js";
 
 /**
  * POST /users — создать пользователя

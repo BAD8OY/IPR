@@ -9,7 +9,6 @@ dotenv.config();
 const URL: string = process.env.PG_URL;
 const sequelize = new Sequelize(URL);
 sequelize.options.logging = false;
-// sequelize.options.omitNull = true;
 
 
 async function connectToPostgres() {

@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from 'express';
-import {orderSchemaCreateZod, orderSchemaUpdateZod} from "../models/pg/order.model.js";
-import {userSchemaCreateZod, userSchemaUpdateZod} from "../models/mongo/user.model";
 import mongoose from "mongoose";
+import {orderSchemaCreateZod, orderSchemaUpdateZod} from "../models/pg/order.model.js";
+import {userSchemaCreateZod, userSchemaUpdateZod} from "../models/mongo/user.model.js";
 
 const validOrderCreate = async (req: Request, res: Response, next: NextFunction) => {
     if (orderSchemaCreateZod.safeParse(req.body).success) {

@@ -54,6 +54,4 @@ const userSchemaUpdateZod = z.object({
         }).optional()
 });
 
-export {userSchemaCreateZod, userSchemaUpdateZod};
-
-export default User;
+export {userSchemaCreateZod, userSchemaUpdateZod, User};
