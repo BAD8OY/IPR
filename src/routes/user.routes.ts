@@ -7,8 +7,8 @@ const userRouter = express.Router();
 
 userRouter.post('/users', authorizationMiddleware, validUserCreate, controller.newUser);
 userRouter.get('/users/:id', authorizationMiddleware, validObjectId, controller.getUserById);
-userRouter.put('/users/:id', authorizationMiddleware, validObjectId, controller.updateUserById);
-userRouter.delete('/users/:id', authorizationMiddleware, validObjectId, validUserUpdate, controller.deleteUserById);
+userRouter.put('/users/:id', authorizationMiddleware, validObjectId, validUserUpdate, controller.updateUserById);
+userRouter.delete('/users/:id', authorizationMiddleware, validObjectId, controller.deleteUserById);
 userRouter.get('/users', authorizationMiddleware, controller.getUserWithFilter);
 
 export {userRouter};

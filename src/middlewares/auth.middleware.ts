@@ -14,15 +14,15 @@ export const authorizationMiddleware = async (req: Request, res: Response, next:
             req.headers.authorization.split(' ')[1],
             process.env.TOKEN,
             async (err, payload: any) => {
-                if (err) return next();
+                // if (err) return next();
                 if (payload) {
                     req.user = await getEmpById(payload.id);
-                    if (!req.user) return next();
+                    if (req.user) return next();
                 }
-                next();
+                // next();
             }
         );
     } else {
-        next();
+        res.status(401).send('Unauthorized');
     }
 };
