@@ -5,7 +5,7 @@ import {Order} from "../models/pg/order.model.js";
  * POST /orders — создать заказ
  */
 async function createOrder(userId: string, amount: number) {
-    await Order.create({userId: userId, amount: amount, status: "pending", createdAt: Date.now()});
+    return await Order.create({userId: userId, amount: amount, status: "pending", createdAt: Date.now()});
 }
 
 /**
@@ -18,7 +18,7 @@ async function getOrder(id: number): Promise<Order> {
 /**
  * PUT /orders/:id — обновить заказ по id
  */
-async function updateOrder(id: number, updateData: Partial<Order>) {
+async function updateOrder(id: number, updateData: Partial<Order>): Promise<number> {
     const [affectedCount] = await Order.update(updateData, {
         where: { id }
     });
@@ -33,7 +33,7 @@ async function updateOrder(id: number, updateData: Partial<Order>) {
 /**
  * DELETE /orders/:id — удалить заказ
  */
-async function deleteOrder(id: number) {
+async function deleteOrder(id: number): Promise<boolean | null> {
     const order: Order = await getOrder(id);
     if (order) {
         await order.destroy();

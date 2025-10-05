@@ -1,9 +1,14 @@
+import {Document} from "mongoose";
 import {User, IUser} from "../models/mongo/user.model.js";
+
+interface DocumentResult<T> extends Document {
+    _doc: T;
+}
 
 /**
  * POST /users — создать пользователя
  */
-async function createUser(email: string, name: string, profile: string) {
+async function createUser(email: string, name: string, profile: string): Promise<IUser> {
     return await User.create({
         email: email,
         name: name,
@@ -16,7 +21,7 @@ async function createUser(email: string, name: string, profile: string) {
  * GET /users/:id — получить пользователя по id
  */
 async function getUser(userId: string): Promise<IUser> {
-    const data = await User.findById(userId);
+    const data: DocumentResult<IUser> = await User.findById(userId);
     return data?._doc;
 }
 
@@ -24,7 +29,7 @@ async function getUser(userId: string): Promise<IUser> {
  * GET /users/:id — получить пользователя по id
  */
 async function getUserByEmail(email: string): Promise<IUser> {
-    const data = await User.findOne({email: email});
+    const data: DocumentResult<IUser> = await User.findOne({email: email});
     return data?._doc;
 }
 
