@@ -1,175 +1,280 @@
-import { Request, Response } from 'express';
+import request from 'supertest';
+import express from 'express';
 
-import controller from '../../controllers/order.controller.js';
-import * as orderService from '../../services/order.service.js';
-import * as userService from '../../services/user.service.js';
+import {orderRouter} from '../../routes/order.routes.js';
+import {Order, orderSchemaCreateZod, orderSchemaUpdateZod} from "../../models/pg/order.model.js";
+import {createOrder, getOrder, updateOrder, deleteOrder} from '../../services/order.service.js';
+import {getUser} from "../../services/user.service.js";
+import {IUser} from "../../models/mongo/user.model.js";
+
+jest.mock('../../middlewares/auth.middleware.js', () => ({
+    authorizationMiddleware: (req, res, next) => {
+        if (req.headers.authorization === 'Bearer validtoken') {
+            return next();
+        }
+        return res.status(401).send('Unauthorized');
+    }
+}));
+
+
+jest.mock('../../middlewares/valid.middleware.js', () => ({
+    validIdNumber: (req, res, next) => {
+        if (!isNaN(Number(req.params.id))) {
+            next();
+        } else {
+            res.status(400).send('Bad request');
+        }
+    },
+    validOrderCreate: (req, res, next) => {
+        if (orderSchemaCreateZod.safeParse(req.body).success) {
+            next();
+        } else {
+            res.status(400).send('Bad request');
+        }
+    },
+    validOrderUpdate: (req, res, next) => {
+        if (orderSchemaUpdateZod.safeParse(req.body).success) {
+            next();
+        } else {
+            res.status(400).send('Bad request');
+        }
+    }
+}));
+
+const mockedCreateOrder = jest.mocked(createOrder);
+const mockedGetOrder = jest.mocked(getOrder);
+const mockedUpdateOrder = jest.mocked(updateOrder);
+const mockedDeleteOrder = jest.mocked(deleteOrder);
+const mockedGetUser = jest.mocked(getUser);
 
 jest.mock('../../services/order.service.js');
 jest.mock('../../services/user.service.js');
 
-const mockResponse = () => {
-    const res: Partial<Response> = {};
-    res.status = jest.fn().mockReturnValue(res);
-    res.send = jest.fn().mockReturnValue(res);
-    return res as Response;
-};
+const app = express();
+app.use(express.json());
+app.use(orderRouter);
 
-describe('order.controller', () => {
-    let req: Partial<Request>;
-    let res: Response;
 
-    beforeEach(() => {
-        req = {};
-        res = mockResponse();
-        jest.clearAllMocks();
+beforeEach(() => {
+    mockedCreateOrder.mockImplementation(
+        async (userId: string, amount: number) => {
+            return {
+                id: 1,
+                userId: userId,
+                amount: amount,
+                status: 'pending',
+                createdAt: 'Data.now()'
+            } as unknown as Order;
+        }
+    );
+
+    mockedGetUser.mockImplementation(async (id) => {
+        if (id === "68a62ece10e94b8d07ccbe1a") {
+            return {
+                _id: "68a62ece10e94b8d07ccbe1a",
+                email: 'test@test.com',
+                name: 'Vasya',
+                profile: [
+                    {
+                        "_id": "6892568143b60098fbe12bd2"
+                    }
+                ],
+                createdAt: '2025-08-06 18:31:55.277 +00:00',
+                __v: 0
+            } as unknown as IUser;
+        }
+        return null;
     });
 
-    describe('newOrder', () => {
-        it('should return 401 if not authorized', async () => {
-            req.user = undefined;
-            req.body = { userId: '1', amount: 10 };
-            (userService.getUser as jest.Mock).mockResolvedValue({ id: '1' });
-            await controller.newOrder(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.send).toHaveBeenCalledWith('Unauthorized');
-        });
-
-        it('should create order and return 201', async () => {
-            req.user = { id: '1' };
-            req.body = { userId: '1', amount: 10 };
-            (userService.getUser as jest.Mock).mockResolvedValue({ id: '1' });
-            (orderService.createOrder as jest.Mock).mockResolvedValue({ id: 'order1' });
-            await controller.newOrder(req as Request, res);
-            expect(orderService.createOrder).toHaveBeenCalledWith('1', 10);
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.send).toHaveBeenCalledWith({ id: 'order1' });
-        });
+    mockedGetOrder.mockImplementation(async (id) => {
+        if (id === 1) {
+            return {
+                id: 1,
+                userId: '689263d269d12bef18c33a4d',
+                amount: '99',
+                status: 'pending',
+                createdAt: '2025-08-06 18:31:55.277 +00:00'
+            } as unknown as Order;
+        }
+        return null;
     });
 
-    describe('getOrderById', () => {
-        it('should return 401 if not authorized', async () => {
-            req.user = undefined;
-            req.params = { id: '1' };
-            await controller.getOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.send).toHaveBeenCalledWith('Unauthorized');
-        });
-
-        it('should return 400 if id is not a number', async () => {
-            req.user = { id: '1' };
-            req.params = { id: 'abc' };
-            await controller.getOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.send).toHaveBeenCalledWith('Bad request');
-        });
-
-        it('should return 404 if order not found', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            (orderService.getOrder as jest.Mock).mockResolvedValue(null);
-            await controller.getOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith('Not Found');
-        });
-
-        it('should return 200 and order if found', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            (orderService.getOrder as jest.Mock).mockResolvedValue({ id: '2' });
-            await controller.getOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({ id: '2' });
-        });
+    mockedUpdateOrder.mockImplementation(async (id: number, data: Partial<Order>) => {
+        if (id === 1) {
+            return 1;
+        }
+        return null;
     });
 
-    describe('updateOrderById', () => {
-        it('should return 401 if not authorized', async () => {
-            req.user = undefined;
-            req.params = { id: '1' };
-            await controller.updateOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.send).toHaveBeenCalledWith('Unauthorized');
-        });
+    mockedDeleteOrder.mockImplementation(async (id) => {
+        if (id === 1) {
+            return true;
+        }
+        return null;
+    });
+});
 
-        it('should return 400 if id is not a number', async () => {
-            req.user = { id: '1' };
-            req.params = { id: 'abc' };
-            await controller.updateOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.send).toHaveBeenCalledWith('Bad request');
-        });
 
-        it('should return 404 if order not found', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            req.body = {};
-            (orderService.updateOrder as jest.Mock).mockResolvedValue(null);
-            await controller.updateOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith('Not Found');
-        });
-
-        it('should return 200 and updated order if found', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            req.body = { amount: 20 };
-            (orderService.updateOrder as jest.Mock).mockResolvedValue({ id: '2', amount: 20 });
-            await controller.updateOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({ id: '2', amount: 20 });
-        });
+describe('newOrder', () => {
+    it('should return 401 if not authorized', async () => {
+        const res = await request(app)
+            .post('/order');
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Unauthorized');
     });
 
-    describe('deleteOrderById', () => {
-        it('should return 401 if not authorized', async () => {
-            req.user = undefined;
-            req.params = { id: '1' };
-            await controller.deleteOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.send).toHaveBeenCalledWith('Unauthorized');
-        });
-
-        it('should return 400 if id is not a number', async () => {
-            req.user = { id: '1' };
-            req.params = { id: 'abc' };
-            await controller.deleteOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.send).toHaveBeenCalledWith('Bad request');
-        });
-
-        it('should return 404 if order not found', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            (orderService.deleteOrder as jest.Mock).mockResolvedValue(null);
-            await controller.deleteOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith('Not Found');
-        });
-
-        it('should return 200 and deleted order if found', async () => {
-            req.user = { id: '1' };
-            req.params = { id: '2' };
-            (orderService.deleteOrder as jest.Mock).mockResolvedValue({ id: '2' });
-            await controller.deleteOrderById(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({ id: '2' });
-        });
+    it('should return 400 not valid amount', async () => {
+        const res = await request(app)
+            .post('/order')
+            .set('Authorization', 'Bearer validtoken')
+            .send({userId: '689263d269d12bef18c33a4d', amount: 'ffgasd'});
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Bad request');
     });
 
-    describe('getOrdersWithFilter', () => {
-        it('should return 401 if not authorized', async () => {
-            req.user = undefined;
-            await controller.getOrdersWithFilter(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(401);
-            expect(res.send).toHaveBeenCalledWith('Unauthorized');
-        });
+    it('should return 400 not found user', async () => {
+        const res = await request(app)
+            .post('/order')
+            .set('Authorization', 'Bearer validtoken')
+            .send({userId: '689263d269d12bef18c33a4d', amount: '99'});
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Not found user by Id');
+    });
 
-        it('should return 200 and orders', async () => {
-            req.user = { id: '1' };
-            (orderService.getOrders as jest.Mock).mockResolvedValue([{ id: '1' }, { id: '2' }]);
-            await controller.getOrdersWithFilter(req as Request, res);
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith([{ id: '1' }, { id: '2' }]);
-        });
+    it('should create order and return 201', async () => {
+        const res = await request(app)
+            .post('/order')
+            .set('Authorization', 'Bearer validtoken')
+            .send({userId: '68a62ece10e94b8d07ccbe1a', amount: '99'});
+        expect(res.status).toBe(201);
+        expect(res.text).toBe('{"id":1,"userId":"68a62ece10e94b8d07ccbe1a","amount":"99","status":"pending","createdAt":"Data.now()"}');
+    });
+});
+
+describe('getOrderById', () => {
+    it('should return 401 if not authorized', async () => {
+        const res = await request(app)
+            .get('/orders/1');
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Unauthorized');
+    });
+
+    it('should return 400 if id is not a number', async () => {
+        const res = await request(app)
+            .get('/orders/abc')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Bad request');
+    });
+
+    it('should return 404 if order not found', async () => {
+        const res = await request(app)
+            .get('/orders/99')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(404);
+        expect(res.text).toBe('Not Found');
+    });
+
+    it('should return 200 and order if found', async () => {
+        const res = await request(app)
+            .get('/orders/1')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('{"id":1,"userId":"689263d269d12bef18c33a4d","amount":"99","status":"pending","createdAt":"2025-08-06 18:31:55.277 +00:00"}');
+    });
+});
+
+describe('updateOrderById', () => {
+    it('should return 401 if not authorized', async () => {
+        const res = await request(app)
+            .put('/orders/1');
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Unauthorized');
+    });
+
+    it('should return 400 if id is not a number', async () => {
+        const res = await request(app)
+            .put('/orders/abc')
+            .set('Authorization', 'Bearer validtoken')
+            .send({userId: '689263d269d12bef18c33a4d', amount: '99'});
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Bad request');
+    });
+
+    it('should return 400 if data is invalid', async () => {
+        const res = await request(app)
+            .put('/orders/1')
+            .set('Authorization', 'Bearer validtoken')
+            .send({status: 'invalid'});
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Bad request');
+    });
+
+    it('should return 404 if order not found', async () => {
+        const res = await request(app)
+            .put('/orders/99')
+            .set('Authorization', 'Bearer validtoken')
+            .send({amount: '99'});
+        expect(res.status).toBe(404);
+        expect(res.text).toBe('Not Found');
+    });
+
+    it('should return 200 and updated order if found', async () => {
+        const res = await request(app)
+            .put('/orders/1')
+            .set('Authorization', 'Bearer validtoken')
+            .send({status: 'paid'});
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('1');
+    });
+});
+
+describe('deleteOrderById', () => {
+    it('should return 401 if not authorized', async () => {
+        const res = await request(app)
+            .delete('/orders/1');
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Unauthorized');
+    });
+
+    it('should return 400 if id is not a number', async () => {
+        const res = await request(app)
+            .delete('/orders/abc')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Bad request');
+    });
+
+    it('should return 404 if order not found', async () => {
+        const res = await request(app)
+            .delete('/orders/99')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(404);
+        expect(res.text).toBe('Not Found');
+    });
+
+    it('should return 200 and deleted order if found', async () => {
+        const res = await request(app)
+            .delete('/orders/1')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('true');
+    });
+});
+
+describe('getOrdersWithFilter', () => {
+    it('should return 401 if not authorized', async () => {
+        const res = await request(app)
+            .get('/orders');
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Unauthorized');
+    });
+
+    it('should return 200 and orders', async () => {
+        const res = await request(app)
+            .get('/orders')
+            .set('Authorization', 'Bearer validtoken');
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('');
     });
 });
